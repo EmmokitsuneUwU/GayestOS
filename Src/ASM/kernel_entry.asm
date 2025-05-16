@@ -1,5 +1,9 @@
 section .text
     [bits 32]
-    [extern main]
-    call main
-    jmp $
+    global _start ;kernel entry es clave
+
+    _start:
+        extern main
+        call main
+    .hang:
+        jmp .hang

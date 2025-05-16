@@ -1,7 +1,6 @@
 [org 0x7c00]                        
-KERNEL_LOCATION equ 0x1000
+KERNEL_LOCATION equ 0x10000
                                     
-
 mov [BOOT_DISK], dl                 
 
 mov ah,0x0e
@@ -59,8 +58,10 @@ mov ds, ax
 mov bp, 0x8000
 mov sp, bp
 
-mov bx, KERNEL_LOCATION
-mov dh, 20 ; Sector ammount
+mov ax, 0x1000
+mov es, ax
+xor bx, bx
+mov dh, 18 ; Sector ammount
 
 mov ah, 0x02
 mov al, dh 

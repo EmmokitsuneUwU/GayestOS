@@ -26,11 +26,80 @@ void cpyTBuffer(uint8_t *d, const char *o)
         o++;
         d++;
     }
-    *d = 0; // Null terminator si es texto
+    *d = 0;
 }
 void cpyDatTBuffer(uint8_t *d, const char *o,unsigned int s)
 {
     for (unsigned int i = 0; i < s; i++) {
         d[i] = (uint8_t)o[i];
+    }
+}
+
+#include <stdint.h>
+#include <stddef.h>
+
+// Nodo para bloques libres y ocupados
+typedef struct block {
+    size_t size;           // Tamaño del bloque (sin incluir esta cabecera)
+    struct block* next;    // Siguiente bloque libre (solo válido si está libre)
+    int free;              // 1 = libre, 0 = ocupado
+} block_t;
+
+static block_t* free_list = NULL;
+static void* heap_start = NULL;
+static size_t heap_size = 0;
+
+void simple_alloc_init(void* heap, size_t size) {
+    heap_start = heap;
+    heap_size = size;
+    free_list = (block_t*)heap_start;
+    free_list->size = heap_size - sizeof(block_t);
+    free_list->next = NULL;
+    free_list->free = 1;
+}
+
+void* simple_malloc(size_t size) {
+    block_t *curr = free_list, *prev = NULL;
+    while (curr) {
+        if (curr->free && curr->size >= size) {
+            // Si sobra espacio para un bloque nuevo, se parte el bloque
+            if (curr->size > size + sizeof(block_t)) {
+                block_t* new_block = (block_t*)((uint8_t*)curr + sizeof(block_t) + size);
+                new_block->size = curr->size - size - sizeof(block_t);
+                new_block->free = 1;
+                new_block->next = curr->next;
+
+                curr->size = size;
+                curr->next = new_block;
+            }
+            curr->free = 0;
+            return (void*)((uint8_t*)curr + sizeof(block_t));
+        }
+        prev = curr;
+        curr = curr->next;
+    }
+    return NULL; // No hay espacio suficiente
+}
+
+void simple_free(void* ptr) {
+    if (!ptr) return;
+
+    block_t* block = (block_t*)((uint8_t*)ptr - sizeof(block_t));
+    block->free = 1;
+
+    // Intentamos fusionar con el siguiente bloque si está libre
+    if (block->next && block->next->free) {
+        block->size += sizeof(block_t) + block->next->size;
+        block->next = block->next->next;
+    }
+
+    // Fusionamos con bloques anteriores si es posible
+    block_t* curr = free_list;
+    while (curr && curr->next && curr->next != block) {
+        curr = curr->next;
+    }
+    if (curr && curr->free && curr->next == block) {
+        curr->size += sizeof(block_t) + block->size;
+        curr->next = block->next;
     }
 }

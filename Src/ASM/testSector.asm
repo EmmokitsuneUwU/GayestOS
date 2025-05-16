@@ -1,1 +1,7 @@
-times 512 dw 0x59
+[BITS 32]
+org 0x1000
+mov byte [0xB8000], ':'
+mov byte [0xB8000 + 1], 0x07
+mov byte [0xB8000 + 2], '3'
+mov byte [0xB8000 + 3], 0x07
+jmp $

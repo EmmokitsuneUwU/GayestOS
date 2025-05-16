@@ -45,10 +45,10 @@ void proccessCommand(char *args[MAX_ARGS],int argc = 0)
         strPrint("Version: ",colorYellow);
         strPrint("0.0.6\n",colorBrightGreen);
     }
-    else if(StrCmp(args[0],"DISKTEST") && argc > 2)
+    else if(StrCmp(args[0],"DISKREAD") && argc > 2)
     {
         int sector = args[1][0] - 48;
-        uint8_t testBuffer[512];
+        uint8_t* testBuffer = (uint8_t*) simple_malloc(512);
         strPrint("OK\n", colorBrightGreen);
         ataRead(sector, testBuffer);
         strPrint("Disk test completed. Data:\n", colorYellow);
@@ -73,12 +73,13 @@ void proccessCommand(char *args[MAX_ARGS],int argc = 0)
         {
             strPrint("ERROR: Invalid format. Use 'ascii' or 'hex'.\n", colorRed);
         }
+        simple_free(testBuffer);
         strPrint("\n", colorYellow);
     }
-    else if(StrCmp(args[0],"DISKTESTWRITE") && argc > 1)
+    else if(StrCmp(args[0],"DISKWRITE") && argc > 1)
     {
         int sector = args[1][0] - 48;
-        uint8_t testBuffer[512];
+        uint8_t* testBuffer = (uint8_t*) simple_malloc(512);
 
         for(int i = 0; i < 512; i++)
         {
@@ -87,16 +88,54 @@ void proccessCommand(char *args[MAX_ARGS],int argc = 0)
 
         strPrint("OK\n", colorBrightGreen);
         ataWrite(sector, testBuffer);
-        strPrint("Disk test completed. Data:\n", colorYellow);
+        strPrint("Disk test completed.\n", colorYellow);
+        simple_free(testBuffer);
     }
     else if(StrCmp(args[0],"REBOOT"))
     {
         strPrint("OK\n", colorBrightGreen);
         reboot();
     }
+    else if (StrCmp(args[0], "TESTALLOC")) {
+        void* ptr = simple_malloc(128);
+        if (ptr) {
+            strPrint("Memory allocator working.\n", colorBrightGreen);
+            simple_free(ptr);
+        } else {
+            strPrint("The memory allocator failed.\n", colorRed);
+        }
+        simple_free(ptr);
+    }
     else if(StrCmp(args[0],"HALT"))
     {
-        asm("hlt");
+        __asm__ (
+            "cli\n"
+            "hlt\n"
+        );
+    }
+    else if(StrCmp(args[0],"LOAD") && argc > 1)
+    {
+        #define LOAD_ADDR ((void*)0x1000)
+
+        strPrint("Loading program from the selected sector... \n", colorYellow);
+        
+        int sector = args[1][0] - '0';
+        uint8_t* ReadedBuffer = (uint8_t*) simple_malloc(512);
+        
+        strPrint("OK\n", colorBrightGreen);
+        ataRead(sector, ReadedBuffer);
+        
+        strPrint("Program loaded. Executing...\n", colorYellow);
+        clearScreen();
+        
+        cpyDatTBuffer((uint8_t*)LOAD_ADDR, (const char*)ReadedBuffer, 512);
+        
+        __asm__ volatile (
+            "jmp *%0"
+            :
+            : "r"(LOAD_ADDR)
+        );
+        simple_free(ReadedBuffer);
     }
     else
     {

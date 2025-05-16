@@ -6,6 +6,8 @@
 #include "Disk.hpp"
 
 #define MAX_ARGS 5
+#define HEAP_SIZE 64 * 1024
+uint8_t heap[HEAP_SIZE];
 
 char commandsBuffer[75];
 int commandsBufferIndex = 0;
@@ -13,6 +15,7 @@ int commandsBufferIndex = 0;
 bool isKeyPressed[256] = {false};
 
 extern "C" void main(){
+    simple_alloc_init(heap, HEAP_SIZE); 
     clearScreen();
     strPrint("Welcome to the gayest Operating System \n",colorYellow);
     strPrint("/->",colorYellow);
