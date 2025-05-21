@@ -1,9 +1,6 @@
 #include "VGA.hpp"
 
 unsigned int VGATextMemorySector = 0xb8000;
-#define VGA_WIDTH 320
-#define VGA_HEIGHT 200
-#define VGA_GRAPHICSMEMORY ((volatile unsigned char*)0xA0000)
 int VGATextCharacters = 0;
 
 void clearScreen()

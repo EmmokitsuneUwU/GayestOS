@@ -50,7 +50,7 @@ void proccessCommand(char *args[MAX_ARGS],int argc = 0)
         int sector = args[1][0] - 48;
         uint8_t* testBuffer = (uint8_t*) simple_malloc(512);
         strPrint("OK\n", colorBrightGreen);
-        ataRead(sector, testBuffer);
+        ataRead(sector, testBuffer,1);
         strPrint("Disk test completed. Data:\n", colorYellow);
 
         if(StrCmp(args[2], "ASCII"))
@@ -123,7 +123,7 @@ void proccessCommand(char *args[MAX_ARGS],int argc = 0)
         uint8_t* ReadedBuffer = (uint8_t*) simple_malloc(512);
         
         strPrint("OK\n", colorBrightGreen);
-        ataRead(sector, ReadedBuffer);
+        ataRead(sector, ReadedBuffer,1);
         
         strPrint("Program loaded. Executing...\n", colorYellow);
         clearScreen();

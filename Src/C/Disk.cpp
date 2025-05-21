@@ -7,16 +7,20 @@ void ataWait() {
     while (!(inb(0x1F7) & 0x08));
 }
 
-void ataRead(uint32_t lba, void* buffer) {
+void ataRead(uint32_t lba, void* buffer, uint8_t count) {
     outb(0x1F6, 0xE0 | ((lba >> 24) & 0x0F));
-    outb(0x1F2, 1);
+    outb(0x1F2, count);
     outb(0x1F3, lba & 0xFF);
     outb(0x1F4, (lba >> 8) & 0xFF);
     outb(0x1F5, (lba >> 16) & 0xFF);
     outb(0x1F7, 0x20);
 
-    ataWait();
-    insw(0x1F0, buffer, 256);
+    for(int i=0;i<count;i++)
+    {
+        ataWait();
+        insw(0x1F0, buffer, 256);
+        buffer = (uint16_t*)buffer + 256;
+    }
 }
 
 void ataWrite(uint32_t lba, const void* buffer) {
