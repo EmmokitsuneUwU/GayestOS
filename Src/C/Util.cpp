@@ -2,6 +2,19 @@
 #include "IO.hpp"
 #define MAX_ARGS 5
 
+int chainToInt(char *str)
+{
+    int result = 0;
+    int i = 0;
+
+    while (str[i] >= '0' && str[i] <= '9') {
+        result = result * 10 + (str[i] - '0');
+        i++;
+    }
+
+    return result;
+}
+
 bool StrCmp(const char* str1, const char* str2)
 {
     while (*str1 != '\0' && *str2 != '\0') {

@@ -36,6 +36,16 @@ void charPrint(unsigned char chr,uint8_t color = 0x0F)
 
 }
 
+void clearLastChar()
+{
+    if (VGATextMemorySector > 0xB8000) {
+        VGATextMemorySector -= 2;
+        *(char*)VGATextMemorySector = ' ';
+        *(char*)(VGATextMemorySector + 1) = 0x0F;
+        VGATextCharacters -= 1;
+    }
+}
+
 void strPrint(const char str[], uint8_t color = 0x0F)
 {
     int i = 0;

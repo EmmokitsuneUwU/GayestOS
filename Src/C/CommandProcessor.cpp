@@ -3,6 +3,7 @@
 #include "Util.hpp"
 #include "Colours.hpp"
 #include "Disk.hpp"
+#include "Speaker.hpp"
 #define MAX_ARGS 5
 
 void parse_command(char *input, char *args[], int *argc) {
@@ -47,7 +48,7 @@ void proccessCommand(char *args[MAX_ARGS],int argc = 0)
     }
     else if(StrCmp(args[0],"DISKREAD") && argc > 2)
     {
-        int sector = args[1][0] - 48;
+        int sector = chainToInt(args[1]);
         uint8_t* testBuffer = (uint8_t*) simple_malloc(512);
         strPrint("OK\n", colorBrightGreen);
         ataRead(sector, testBuffer,1);
@@ -78,7 +79,7 @@ void proccessCommand(char *args[MAX_ARGS],int argc = 0)
     }
     else if(StrCmp(args[0],"DISKWRITE") && argc > 1)
     {
-        int sector = args[1][0] - 48;
+        int sector = chainToInt(args[1]);
         uint8_t* testBuffer = (uint8_t*) simple_malloc(512);
 
         for(int i = 0; i < 512; i++)
@@ -113,22 +114,22 @@ void proccessCommand(char *args[MAX_ARGS],int argc = 0)
             "hlt\n"
         );
     }
-    else if(StrCmp(args[0],"LOAD") && argc > 1)
+    else if(StrCmp(args[0],"LOAD") && argc > 2)
     {
         #define LOAD_ADDR ((void*)0x1000)
 
         strPrint("Loading program from the selected sector... \n", colorYellow);
-        
-        int sector = args[1][0] - '0';
-        uint8_t* ReadedBuffer = (uint8_t*) simple_malloc(512);
+        int ammount = chainToInt(args[2]);
+        int sector = chainToInt(args[1]);
+        uint8_t* ReadedBuffer = (uint8_t*) simple_malloc(512*ammount);
         
         strPrint("OK\n", colorBrightGreen);
-        ataRead(sector, ReadedBuffer,1);
+        ataRead(sector, ReadedBuffer,ammount);
         
         strPrint("Program loaded. Executing...\n", colorYellow);
         clearScreen();
         
-        cpyDatTBuffer((uint8_t*)LOAD_ADDR, (const char*)ReadedBuffer, 512);
+        cpyDatTBuffer((uint8_t*)LOAD_ADDR, (const char*)ReadedBuffer, 512*ammount);
         
         __asm__ volatile (
             "jmp *%0"
@@ -137,6 +138,12 @@ void proccessCommand(char *args[MAX_ARGS],int argc = 0)
         );
         simple_free(ReadedBuffer);
     }
+    else if (StrCmp(args[0], "SOUND")) 
+    {
+        strPrint("OK\n", colorBrightGreen);
+        play_sound(1000);
+    }
+    
     else
     {
         strPrint("ERROR\n", colorRed);

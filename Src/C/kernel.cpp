@@ -55,7 +55,14 @@ extern "C" void main(){
                         commandsBuffer[0] = '\0';
                         strPrint("/->",colorYellow);
                     }
-            }
+                }
+                else if (scancode == 0x0E)
+                {
+                    clearLastChar();
+                    commandsBufferIndex--;
+                    commandsBuffer[commandsBufferIndex] = '\0';
+                }
+                
         }
 
         if (scancode != 0 && (scancode & 0x80)) {

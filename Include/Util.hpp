@@ -7,6 +7,7 @@ extern bool StrCmp(const char* str1, const char* str2);
 extern void reboot();
 extern void cpyStrTBuffer(uint8_t *d, const char *o);
 extern void cpyDatTBuffer(uint8_t *d, const char *o,unsigned int s);
+extern int  chainToInt(char *str);
 
 #ifdef __cplusplus
 extern "C" {

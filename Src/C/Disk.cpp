@@ -36,3 +36,5 @@ void ataWrite(uint32_t lba, const void* buffer) {
 
     while (inb(0x1F7) & 0x80);
 }
+
+// fuck this

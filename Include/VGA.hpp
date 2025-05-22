@@ -11,5 +11,6 @@ extern void clearScreen();
 extern void charPrint(unsigned char chr,uint8_t color);
 extern void strPrint(const char str[], uint8_t color);
 extern void hexPrint(unsigned int value, uint8_t color);
+extern void clearLastChar();
 
 #endif
