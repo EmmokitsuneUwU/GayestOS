@@ -30,4 +30,4 @@ sh sectorAmmount.sh "Binaries/testSector.bin"
 dd if=/dev/zero of=DISK.img bs=1 count=92160
 dd if=Binaries/testSector.bin of=DISK.img bs=512 count=5 conv=notrunc
 
-qemu-system-x86_64 -drive format=raw,file="Binaries/OS.bin",index=0,if=floppy, -drive format=raw,file="DISK.img",if=ide,index=0  -m 128M -audiodev pa,id=speaker -machine pcspk-audiodev=speaker
+qemu-system-x86_64 -drive format=raw,file="Binaries/OS.bin",index=0,if=floppy, -drive format=raw,file="DISK.img",if=ide,index=0  -m 128M -audiodev pa,id=speaker -machine pcspk-audiodev=speaker -cpu pentium

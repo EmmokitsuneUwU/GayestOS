@@ -4,6 +4,6 @@
 
 extern void play_sound(uint32_t nFrequence);
 extern void nosound();
-extern void beep();
+extern void beep(uint32_t nFrequence);
 
 #endif // SPEAKER_HPP

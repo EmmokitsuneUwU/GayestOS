@@ -138,14 +138,16 @@ void proccessCommand(char *args[MAX_ARGS],int argc = 0)
         );
         simple_free(ReadedBuffer);
     }
-    else if (StrCmp(args[0], "SOUND")) 
+    else if (StrCmp(args[0], "SOUND") && argc > 1) 
     {
+        int frequency = chainToInt(args[1]);
         strPrint("OK\n", colorBrightGreen);
-        play_sound(1000);
+        beep(frequency);
     }
     
     else
     {
         strPrint("ERROR\n", colorRed);
+        beep(700);
     }
 }
